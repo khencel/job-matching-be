@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'userauth',
-    'Products'
+    'Products',
+    'post_a_job'
     
 ]
 
