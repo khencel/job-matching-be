@@ -4,6 +4,8 @@ from django.utils import timezone
 
     
 class User(AbstractUser):
+    role = models.CharField(max_length=255, blank=True, null=True)
+    is_verified = models.BooleanField(default=False)
     email = models.EmailField(unique=True)
     userDetails_emp = models.JSONField(blank=True, null=True)
     userDetails_job_seeker = models.JSONField(blank=True, null=True)
