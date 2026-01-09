@@ -1,11 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
+import uuid
 
     
 class User(AbstractUser):
     role = models.CharField(max_length=255, blank=True, null=True)
-    is_verified = models.BooleanField(default=False)
+    is_email_verified = models.BooleanField(default=False)
     email = models.EmailField(unique=True)
     userDetails_emp = models.JSONField(blank=True, null=True)
     userDetails_job_seeker = models.JSONField(blank=True, null=True)
@@ -26,3 +27,8 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ['username']
     class Meta:
         pass
+    
+class EmailVerification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    token = models.UUIDField(default=uuid.uuid4, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)

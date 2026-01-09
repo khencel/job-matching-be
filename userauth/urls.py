@@ -20,6 +20,7 @@ urlpatterns = [
     path('user/<int:pk>', views.UserRetrieveUpdateDestroyView.as_view(), name='update'),
     
     path('add-super-admin', views.AddSuperAdmin.as_view(), name='add_super_admin'),
+    path("verify-email/<uuid:token>/", views.VerifyEmail.as_view()),
     
     path('test-translate', views.TestTranslate.as_view(), name='test_translate'),
 ]

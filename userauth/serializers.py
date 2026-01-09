@@ -37,6 +37,7 @@ class UserSerializer(serializers.ModelSerializer):
         user = User(**validated_data)
         user.set_password(password) 
         user.role = user_type
+        user.is_active = False
         user.save()
         
         username = f"{last_name}{first_name}{user.id}".lower()
@@ -66,6 +67,8 @@ class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
             "email": self.user.email,
             "username": self.user.username,
             "first_name": self.user.first_name,
-            "last_name": self.user.last_name
+            "last_name": self.user.last_name,
+            "is_email_verified": self.user.is_email_verified,
+            "role": self.user.role
         }
         return data

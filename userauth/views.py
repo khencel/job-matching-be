@@ -10,6 +10,9 @@ from .serializers import UserSerializer, EmailTokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
+from .models import EmailVerification
+from utils.email import send_verification_email
+
 
 
 class EmailTokenObtainPairView(TokenObtainPairView):
@@ -71,6 +74,11 @@ class ListCreate(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     
+    def perform_create(self, serializer):
+        user = serializer.save()
+        verification = EmailVerification.objects.create(user=user)
+        send_verification_email(user, verification.token)
+    
 class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
     queryset = User.objects.all()
@@ -85,6 +93,24 @@ class AddSuperAdmin(APIView):
             data.save()
             return Response(data.data, status=status.HTTP_201_CREATED)
         return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class VerifyEmail(APIView):
+    def get(self, request, token):
+        try:
+            verification = EmailVerification.objects.get(token=token)
+            user = verification.user
+            user.is_active = True
+            user.is_email_verified = True
+            user.save()
+
+            verification.delete()
+
+            return Response({"message": "Email verified successfully"})
+        except EmailVerification.DoesNotExist:
+            return Response(
+                {"error": "Invalid or expired token"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
     
 
 
