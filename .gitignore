@@ -1,0 +1,18 @@
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Virtual Environments
+.venv/
+env/
+venv/
+ENV/
+
+# Local Database (Optional, but usually recommended)
+db.sqlite3
+
+# macOS specific junk
+.DS_Store.venv/
+__pycache__/
+*.pyc
+.DS_Store
