@@ -8,9 +8,6 @@ env/
 venv/
 ENV/
 
-# Local Database (Optional, but usually recommended)
-db.sqlite3
-
 # macOS specific junk
 .DS_Store.venv/
 __pycache__/
