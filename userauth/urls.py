@@ -21,6 +21,7 @@ urlpatterns = [
     
     path('add-super-admin', views.AddSuperAdmin.as_view(), name='add_super_admin'),
     path("verify-email/<uuid:token>/", views.VerifyEmail.as_view()),
+    path("check-email/<str:email>/", views.CheckEmailIfExist.as_view()),
     
     path('test-translate', views.TestTranslate.as_view(), name='test_translate'),
 ]

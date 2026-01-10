@@ -110,7 +110,15 @@ class VerifyEmail(APIView):
             return Response(
                 {"error": "Invalid or expired token"},
                 status=status.HTTP_400_BAD_REQUEST
+                
             )
+class CheckEmailIfExist(APIView):
+    def get(self, request, email):
+        user = User.objects.filter(email=email).first()
+        if user:
+            return Response({"exists": True})
+        else:
+            return Response({"exists": False})
     
 
 
@@ -132,6 +140,7 @@ class TestTranslate(APIView):
         return Response({
             "translatedText": result
         })
+        
 
     
 
