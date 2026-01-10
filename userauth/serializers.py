@@ -37,7 +37,6 @@ class UserSerializer(serializers.ModelSerializer):
         user = User(**validated_data)
         user.set_password(password) 
         user.role = user_type
-        user.is_active = False
         user.save()
         
         username = f"{last_name}{first_name}{user.id}".lower()

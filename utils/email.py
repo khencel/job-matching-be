@@ -5,7 +5,7 @@ from django.utils.html import strip_tags
 from django.utils.timezone import now
 
 def send_verification_email(user, token):
-    verify_url = f"http://localhost:3000/verify-email/{token}"
+    verify_url = f"http://127.0.0.1:8000/api/auth/verify-email/{token}"
 
     subject = "Verify your email"
     from_email = settings.DEFAULT_FROM_EMAIL
