@@ -14,6 +14,7 @@ from pathlib import Path
 
 import environ
 from datetime import timedelta
+import os
 
 
 env = environ.Env()
@@ -50,7 +51,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'userauth',
     'Products',
-    'post_a_job'
+    'post_a_job',
+    'perksbenefits'
     
 ]
 
@@ -206,5 +208,9 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 

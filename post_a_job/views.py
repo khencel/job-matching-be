@@ -6,9 +6,12 @@ from .services.jobpost_service import create_jobpost
 from .models import JobPost
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 class JobPostCreateView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
     def post(self, request):
         
         serializer = JobPostSerializer(data=request.data)
@@ -30,6 +33,8 @@ class DynamicPageSizePagination(PageNumberPagination):
     max_page_size = 100
         
 class JobPostListView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
     
     serializer_class = JobPostSerializer
     pagination_class = DynamicPageSizePagination

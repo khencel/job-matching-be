@@ -6,12 +6,13 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
+
 urlpatterns = [
     # path('login', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('login', views.EmailTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh', TokenRefreshView.as_view(), name='token_refresh'),
     path('token/verify', TokenVerifyView.as_view(), name='token_verify'),
-    path('test', views.ProtectedView.as_view(), name='test_view'),
+    # path('test', views.ProtectedView.as_view(), name='test_view'),
     path('logout', views.LogoutView.as_view(), name='logout'),
     path('get-data', views.GetData.as_view(), name='getData'),
     
@@ -23,5 +24,8 @@ urlpatterns = [
     path("verify-email/<uuid:token>/", views.VerifyEmail.as_view()),
     path("check-email/<str:email>/", views.CheckEmailIfExist.as_view()),
     
+    path("user/update/<int:pk>/", views.UpdateUser.as_view(), name="update_user"),
+    
     path('test-translate', views.TestTranslate.as_view(), name='test_translate'),
 ]
+
