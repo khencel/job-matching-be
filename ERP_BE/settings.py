@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     'userauth',
     'Products',
     'post_a_job',
-    'perksbenefits'
+    'perksbenefits',
+    'job_apply'
     
 ]
 

@@ -76,3 +76,9 @@ class DeleteJobPostView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except JobPost.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+class JobPostListAllView(APIView):
+    def get(self, request):
+        jobposts = JobPost.objects.all()
+        serializer = JobPostSerializer(jobposts, many=True)
+        return Response(serializer.data)

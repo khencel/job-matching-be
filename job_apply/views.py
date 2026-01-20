@@ -1,0 +1,57 @@
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import JobApply
+from .serializers import JobApplySerializer
+from rest_framework.pagination import PageNumberPagination
+
+
+
+class DynamicPageSizePagination(PageNumberPagination):
+    
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+    
+class JobApplyView(APIView):
+    def get(self, request):
+        page_size = request.query_params.get('page_size', 10)
+        
+        try:
+            page_size = int(page_size)
+        
+            if page_size > 100:
+                page_size = 100
+            if page_size < 1:
+                page_size = 10
+        except ValueError:
+            page_size = 10
+            
+        try:
+            job_apply = JobApply.objects.all()
+            
+            
+            paginator = DynamicPageSizePagination()
+            paginator.page_size = page_size  
+
+
+            paginated_job_apply = paginator.paginate_queryset(job_apply, request)
+
+            serializer = JobApplySerializer(paginated_job_apply, many=True)
+            
+            return paginator.get_paginated_response(serializer.data)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+    
+    def post(self, request):
+        try:
+            serializer = JobApplySerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
