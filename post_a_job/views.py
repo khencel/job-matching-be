@@ -69,6 +69,9 @@ class JobPostListView(APIView):
         return paginator.get_paginated_response(serializer.data)
     
 class DeleteJobPostView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    
     def delete(self, request, pk):
         try:
             jobpost = JobPost.objects.get(pk=pk)
@@ -78,6 +81,9 @@ class DeleteJobPostView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
 class JobPostListAllView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    
     def get(self, request):
         jobposts = JobPost.objects.all()
         serializer = JobPostSerializer(jobposts, many=True)

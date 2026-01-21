@@ -31,6 +31,7 @@ class EmailTokenObtainPairView(TokenObtainPairView):
 
 
 class LogoutView(APIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     
     def post(self, request):
@@ -56,13 +57,14 @@ class LogoutView(APIView):
             )
             
 class GetData(APIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     
     def get(self, request):
-        user_data = model_to_dict(request.user, exclude=['password'])
+        serializer = UserSerializer(request.user)
         return Response({
             'message': 'This is a protected endpoint',
-            'user': user_data
+            'user': serializer.data
         })
         
 class ListCreateWithAuth(generics.ListCreateAPIView):

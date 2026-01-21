@@ -4,6 +4,8 @@ from rest_framework import status
 from .models import JobApply
 from .serializers import JobApplySerializer
 from rest_framework.pagination import PageNumberPagination
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 
 
@@ -14,6 +16,9 @@ class DynamicPageSizePagination(PageNumberPagination):
     max_page_size = 100
     
 class JobApplyView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    
     def get(self, request):
         page_size = request.query_params.get('page_size', 10)
         
