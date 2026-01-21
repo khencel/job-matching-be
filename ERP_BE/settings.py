@@ -53,7 +53,8 @@ INSTALLED_APPS = [
     'Products',
     'post_a_job',
     'perksbenefits',
-    'job_apply'
+    'job_apply',
+    'my_resume'
     
 ]
 
