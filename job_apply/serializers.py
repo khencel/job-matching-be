@@ -22,7 +22,7 @@ class JobApplySerializer(serializers.ModelSerializer):
 
       
         return {
-            "userDetails": serializer.data['userDetails_job_seeker']['jobSeekerData'],
+            "userDetails": serializer.data,
             "email": serializer.data['email'] 
         } 
 
