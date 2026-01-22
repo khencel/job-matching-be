@@ -11,6 +11,13 @@ from userauth.serializers import UserSerializer
 class JobApplySerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField(read_only=True)
     job_post = serializers.SerializerMethodField(read_only=True)
+    # write-only fields for creating via IDs (map to model fields)
+    user_id = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.all(), write_only=True, source='user'
+    )
+    job_post_id = serializers.PrimaryKeyRelatedField(
+        queryset=JobPost.objects.all(), write_only=True, source='job_post'
+    )
     
     class Meta:
         model = JobApply
@@ -20,24 +27,35 @@ class JobApplySerializer(serializers.ModelSerializer):
         user = obj.user
         serializer = UserSerializer(user)
 
-      
+        job_seeker_data = None
+        try:
+            job_seeker_data = serializer.data['userDetails_job_seeker']['jobSeekerData']
+        except (TypeError, KeyError):
+            job_seeker_data = serializer.data.get('userDetails_job_seeker')
+
         return {
-            "userDetails": serializer.data,
-            "email": serializer.data['email'] 
+            "userDetails": job_seeker_data,
+            "email": serializer.data.get('email') 
         } 
 
     def get_job_post(self, obj):
         
         job_post = obj.job_post
         serializer = JobPostSerializers.JobPostSerializer(job_post)
-        employer_id =serializer.data['user_id']
-        
-        user = User.objects.get(id=employer_id)
-        userSerializer = UserSerializer(user)
+        employer_id = serializer.data.get('user_id')
+
+        employer_data = None
+        if employer_id:
+            try:
+                user = User.objects.get(id=employer_id)
+                userSerializer = UserSerializer(user)
+                employer_data = userSerializer.data
+            except User.DoesNotExist:
+                employer_data = None
         
         return {
             "jopPostDetails": serializer.data,   
-            "employerDetails": userSerializer.data
+            "employerDetails": employer_data
         } 
 
        
