@@ -54,7 +54,7 @@ class JobApplySerializer(serializers.ModelSerializer):
                 employer_data = None
         
         return {
-            "jopPostDetails": serializer.data,   
+            "jobPostDetails": serializer.data,   
             "employerDetails": employer_data
         } 
 
