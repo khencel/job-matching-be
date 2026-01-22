@@ -156,10 +156,9 @@ class UpdateUser(APIView):
         except User.DoesNotExist:
             return Response({"error": "Hindi nahanap ang user"}, status=404)
         
-        # Don't copy serializer data - work directly with request.data
         data = {}
         
-        # ---- JSON details ----
+        
         if 'details' in request.data:
             try:
                 serializer = UserSerializer(user)
@@ -178,7 +177,6 @@ class UpdateUser(APIView):
             except json.JSONDecodeError:
                 return Response({"error": "Maling JSON ang ibinigay sa 'details'"}, status=400)
         
-        # ---- normal fields ----
         for field in ['first_name', 'last_name', 'email', 'role', 'is_email_verified']:
             if field in request.data:
                 data[field] = request.data[field]
@@ -188,11 +186,11 @@ class UpdateUser(APIView):
             user, 
             data=data, 
             partial=True,
-            context={'request': request}  # Pass request context
+            context={'request': request}  
         )
         serializer_new.is_valid(raise_exception=True)
         
-        # Handle file uploads separately after validation
+
         if 'avatar' in request.FILES:
             user.avatar = request.FILES['avatar']
         elif 'avatar' in request.data and request.data['avatar'] in [None, '', 'null']:
@@ -209,7 +207,25 @@ class UpdateUser(APIView):
             "message": "Matagumpay na na-update ang user",
             "data": UserSerializer(user).data,
         })
+        
+class UpdateUserNotEmployee(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    def put(self, request):
 
+        serializer = UserSerializer(
+            request.user,
+            data=request.data,
+            partial=True,
+            context={"request": request}  
+        )
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=400)
+           
 
 
 

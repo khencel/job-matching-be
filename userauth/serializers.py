@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate
 import json
 from perksbenefits.models import PerksBenefits
 from perksbenefits.serializers import PerksBenefitsSerializer
+from my_resume.models import MyResume
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -61,6 +62,49 @@ class UserSerializer(serializers.ModelSerializer):
         username = f"{last_name}{first_name}{user.id}".lower()
         user.username = username
         user.save(update_fields=['username'])
+        return user
+    
+    def update(self, instance, validated_data):
+        request = self.context.get("request")
+        user = instance
+        
+        for field in [
+            "avatar",
+            "banner",
+            "deleted_at",
+        ]:
+            if field in validated_data:
+                setattr(user, field, validated_data[field])
+
+        details = request.data.get("details", None)
+
+        if details:
+            details_data = json.loads(details) if isinstance(details, str) else details
+
+            if user.role == "employer":
+                user.userDetails_emp = details_data
+
+            elif user.role == "job_seeker":
+                user.userDetails_job_seeker = details_data
+                
+                resume_file = request.FILES.get("resume")  
+                resume_info = details_data.get("resume_info", {})  
+
+                if resume_file or resume_info:
+                   
+                    MyResume.objects.filter(user=user).delete()
+
+                    MyResume.objects.create(
+                        user=user,
+                        resume=resume_file,
+                        resume_info=resume_info
+                    )
+
+
+            elif user.role == "supervisory":
+                user.userDetails_supervisory = details_data
+
+        user.save()
         return user
     
     

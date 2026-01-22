@@ -27,5 +27,6 @@ urlpatterns = [
     path("user/update/<int:pk>/", views.UpdateUser.as_view(), name="update_user"),
     
     path('test-translate', views.TestTranslate.as_view(), name='test_translate'),
+    path('update/user', views.UpdateUserNotEmployee.as_view(), name='update_user'),
 ]
 
