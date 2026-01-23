@@ -100,3 +100,19 @@ class JobPostDetailsView(APIView):
             return Response(serializer.data)
         except JobPost.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class JobPostUpdate(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    def put(self, request, pk):
+        try:
+            jobpost = JobPost.objects.get(pk=pk)
+        except JobPost.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = JobPostSerializer(jobpost, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        
+        return Response(serializer.data)

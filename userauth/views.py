@@ -148,65 +148,23 @@ class TestTranslate(APIView):
 from rest_framework.parsers import MultiPartParser, FormParser
 
 class UpdateUser(APIView):
-    parser_classes = (MultiPartParser, FormParser)
-    
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
     def put(self, request, pk):
-        try:
-            user = User.objects.get(pk=pk)
-        except User.DoesNotExist:
-            return Response({"error": "Hindi nahanap ang user"}, status=404)
-        
-        data = {}
-        
-        
-        if 'details' in request.data:
-            try:
-                serializer = UserSerializer(user)
-                current_details = serializer.data.get('userDetails_emp', {}) or {}
-                new_details = json.loads(request.data['details'])
-                
-                company_info = current_details.get('company_information', {})
-                company_info['name'] = new_details.get('companyName', company_info.get('name'))
-                company_info['founded'] = new_details.get('founded', company_info.get('founded'))
-                company_info['no_of_emp'] = new_details.get('employees', company_info.get('no_of_emp'))
-                company_info['region'] = new_details.get('region', company_info.get('region'))
-                company_info['profile'] = new_details.get('companyProfileText', company_info.get('profile'))
-                
-                current_details['company_information'] = company_info
-                data['userDetails_emp'] = current_details
-            except json.JSONDecodeError:
-                return Response({"error": "Maling JSON ang ibinigay sa 'details'"}, status=400)
-        
-        for field in ['first_name', 'last_name', 'email', 'role', 'is_email_verified']:
-            if field in request.data:
-                data[field] = request.data[field]
-        
-       
-        serializer_new = UserSerializer(
-            user, 
-            data=data, 
-            partial=True,
-            context={'request': request}  
-        )
-        serializer_new.is_valid(raise_exception=True)
-        
+        user = generics.get_object_or_404(User, pk=pk)
 
-        if 'avatar' in request.FILES:
-            user.avatar = request.FILES['avatar']
-        elif 'avatar' in request.data and request.data['avatar'] in [None, '', 'null']:
-            user.avatar = None
-            
-        if 'banner' in request.FILES:
-            user.banner = request.FILES['banner']
-        elif 'banner' in request.data and request.data['banner'] in [None, '', 'null']:
-            user.banner = None
-        
-        serializer_new.save()
-        
-        return Response({
-            "message": "Matagumpay na na-update ang user",
-            "data": UserSerializer(user).data,
-        })
+        serializer = UserSerializer(
+            user,
+            data=request.data,
+            partial=True,
+            context={"request": request}  
+        )
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=400)
         
 class UpdateUserNotEmployee(APIView):
     authentication_classes = [JWTAuthentication]
