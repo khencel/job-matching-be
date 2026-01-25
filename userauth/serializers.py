@@ -13,13 +13,15 @@ class UserSerializer(serializers.ModelSerializer):
     avatar = serializers.ImageField(required=False, allow_null=True)
     banner = serializers.ImageField(required=False, allow_null=True)
     perks_benefits = serializers.SerializerMethodField()
+    resume = serializers.SerializerMethodField()
+    
     
     class Meta:
         model = User
         fields = [
             'id', 'email','password','deleted_at','first_name','last_name',
             'userDetails_emp','userDetails_job_seeker','userDetails_supervisory',
-            'avatar','banner','role','is_email_verified','perks_benefits','is_active','created_at'
+            'avatar','banner','role','is_email_verified','perks_benefits','is_active','created_at','resume'
         ]
         extra_kwargs = {
             'password': {'write_only': True, 'required': False},
@@ -30,6 +32,13 @@ class UserSerializer(serializers.ModelSerializer):
             "user_id",
             "perks_benefits"
         ]
+        
+    def get_resume(self, obj):
+        user_id = obj.id
+        resume = MyResume.objects.filter(user_id=user_id, deleted=False).first()
+        if resume:
+            return resume.resume
+        return None
         
     def get_perks_benefits(self, obj):
         user_id = obj.id
