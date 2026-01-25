@@ -52,18 +52,17 @@ class JobApplyView(APIView):
     
     def post(self, request):
         try:
-            # allow clients to POST with keys `user` and `job_post` (ids)
+            
             data = request.data
             try:
                 payload = data.copy()
             except Exception:
                 payload = dict(data)
 
-            # default to authenticated user if not provided
+           
             if 'user_id' not in payload and 'user' not in payload:
                 payload['user_id'] = request.user.id
 
-            # map legacy keys to the write-only fields
             if 'user' in payload and 'user_id' not in payload:
                 payload['user_id'] = payload.get('user')
             if 'job_post' in payload and 'job_post_id' not in payload:
@@ -77,3 +76,26 @@ class JobApplyView(APIView):
             return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+    
+    
+class ApplyChangeStatus(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        id = request.data.get('id')
+        pk = int(id)
+        apply = JobApply.objects.get(pk=pk)
+        apply.status = request.data.get('status')
+        apply.save()
+        serializer = JobApplySerializer(apply)
+        return Response(serializer.data)
+    
+class ApplyJobSeekerApplicant(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        job_apply = JobApply.objects.all()
+        serializer = JobApplySerializer(job_apply, many=True)
+        return Response(serializer.data)

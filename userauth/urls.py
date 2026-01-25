@@ -28,5 +28,6 @@ urlpatterns = [
     
     path('test-translate', views.TestTranslate.as_view(), name='test_translate'),
     path('update/user', views.UpdateUserNotEmployee.as_view(), name='update_user'),
+    path('users', views.GetAllUserByFilter.as_view(), name="users")
 ]
 
