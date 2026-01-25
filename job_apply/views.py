@@ -7,6 +7,8 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError
+from utils.helper import paginate_queryset
+
 
 
 
@@ -94,8 +96,20 @@ class ApplyChangeStatus(APIView):
 class ApplyJobSeekerApplicant(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
-    
+
     def get(self, request):
-        job_apply = JobApply.objects.all()
-        serializer = JobApplySerializer(job_apply, many=True)
-        return Response(serializer.data)
+        employer = request.user
+        is_redirect = employer.userDetails_emp['redirect_job_seeker']
+        if is_redirect:
+            job_apply = JobApply.objects.filter(employer=employer)
+        else:
+            job_apply = JobApply.objects.filter(employer=employer, status='approved')
+
+        return paginate_queryset(
+            request,
+            job_apply,
+            JobApplySerializer
+        )
+        
+        
+    

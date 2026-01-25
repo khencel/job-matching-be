@@ -14,8 +14,8 @@ class BaseModel(models.Model):
         self.save()
         
 class JobApply(BaseModel):  
-    user        = models.ForeignKey(User, on_delete=models.CASCADE)
-    employer_id = models.IntegerField(null=True, blank=True)
+    user        = models.ForeignKey(User, on_delete=models.CASCADE,related_name="job_applications")
+    employer    = models.ForeignKey(User, on_delete=models.CASCADE,related_name="received_applications")
     job_post = models.ForeignKey(
         JobPost,
         on_delete=models.CASCADE,

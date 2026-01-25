@@ -1,7 +1,11 @@
 from rest_framework import serializers
 from .models import JobPost
+from userauth.models import User
+from userauth.serializers import UserSerializer
 
 class JobPostSerializer(serializers.ModelSerializer):
+    employer = serializers.SerializerMethodField()
+    
     class Meta:
         model = JobPost
         fields = [
@@ -17,8 +21,15 @@ class JobPostSerializer(serializers.ModelSerializer):
             "who_you_are",
             "nice_to_have",
             "benefits",
-            "created_at"
+            "created_at",
+            "employer"
         ]
+        
+    def get_employer(self, obj):
+        user_id = obj.user_id
+        user = User.objects.filter(id=user_id).values("avatar")
+        
+        return user
         
     def validate_salary(self, value):
         if value < 0:

@@ -239,6 +239,19 @@ class GetAllUserByFilter(APIView):
         serializer = UserSerializer(paginated_users, many=True)
 
         return paginator.get_paginated_response(serializer.data)
+    
+class UpdateEmployerDetails(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def put(self, request, pk):
+        emp = User.objects.get(pk=pk)
+        details = request.data.get('details', {}) 
+        emp.userDetails_emp = json.loads(details)
+        emp.save()
+        serializer = UserSerializer(emp)
+        return Response(serializer.data)
+
 
 
 

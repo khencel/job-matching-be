@@ -5,13 +5,15 @@ from post_a_job.models import JobPost
 import post_a_job.serializers as JobPostSerializers
 from userauth.models import User
 from userauth.serializers import UserSerializer
+from my_resume.models import MyResume
+from my_resume.serializers import MyResumeSerializer
+
 
 
 
 class JobApplySerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField(read_only=True)
     job_post = serializers.SerializerMethodField(read_only=True)
-    # write-only fields for creating via IDs (map to model fields)
     user_id = serializers.PrimaryKeyRelatedField(
         queryset=User.objects.all(), write_only=True, source='user'
     )
@@ -30,12 +32,19 @@ class JobApplySerializer(serializers.ModelSerializer):
         job_seeker_data = None
         try:
             job_seeker_data = serializer.data['userDetails_job_seeker']['jobSeekerData']
+            
+            myresume = MyResume.objects.get(user=user)
+            resume_serializer = MyResumeSerializer(myresume)
+           
+            
         except (TypeError, KeyError):
             job_seeker_data = serializer.data.get('userDetails_job_seeker')
 
         return {
             "userDetails": job_seeker_data,
-            "email": serializer.data.get('email') 
+            "email": serializer.data.get('email'), 
+            "avatar": serializer.data.get('avatar'),
+            "resume": resume_serializer.data if myresume else None
         } 
 
     def get_job_post(self, obj):
