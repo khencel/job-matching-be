@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='jobapply',
             name='job_post',
-            field=models.ForeignKey(default=32, on_delete=django.db.models.deletion.CASCADE, related_name='applications', to='post_a_job.jobpost'),
+            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, related_name='applications', to='post_a_job.jobpost'),
             preserve_default=False,
         ),
     ]
