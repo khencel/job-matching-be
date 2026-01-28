@@ -37,29 +37,8 @@ class UserSerializer(serializers.ModelSerializer):
         user_id = obj.id
         # Renamed variable to 'resume_obj' to avoid confusion with the field 'resume'
         resume = MyResume.objects.filter(user_id=user_id, deleted=False).first()
-<<<<<<< Updated upstream
-        
-        if resume and resume.resume:
-            # 1. Get the Request context (needed to build full http:// URL)
-            request = self.context.get('request')
-            
-            try:
-                # 2. Get the relative path (e.g., /media/resumes/cv.pdf)
-                file_url = resume.resume.url
-                
-                # 3. Convert to Absolute URL (e.g., http://localhost:8000/media/...)
-                if request:
-                    return request.build_absolute_uri(file_url)
-                return file_url
-                
-            except ValueError:
-                # Handles cases where the file field exists but no file is actually associated
-                return None
-                
-=======
         if resume:
             return resume.resume.name
->>>>>>> Stashed changes
         return None
         
     def get_perks_benefits(self, obj):
