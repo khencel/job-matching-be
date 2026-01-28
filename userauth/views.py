@@ -15,6 +15,7 @@ from utils.email import send_verification_email
 from rest_framework_simplejwt.authentication import JWTAuthentication
 import json
 from rest_framework.pagination import PageNumberPagination
+from utils.helper import paginate_queryset
 
 
 class EmailTokenObtainPairView(TokenObtainPairView):
@@ -192,53 +193,25 @@ class DynamicPageSizePagination(PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 100
     
-import json
-
 class GetAllUserByFilter(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
-    serializer_class = UserSerializer
-    pagination_class = DynamicPageSizePagination
-
     def post(self, request):
-        page_size = request.query_params.get('page_size', 10)
+        role = request.data['role']
 
-        try:
-            page_size = int(page_size)
-            if page_size > 100:
-                page_size = 100
-            if page_size < 1:
-                page_size = 10
-        except ValueError:
-            page_size = 10
-
-        filter_list = request.data.get('filter')
-
-        if not filter_list:
-            users = User.objects.all()
+        if role == "all":
+            user = User.objects.all()
         else:
-            if isinstance(filter_list, str):
-                filter_list = json.loads(filter_list)
-
-            allowed_filters = ['role', 'is_active']
-
-            filters = {
-                key: filter_list[key]
-                for key in allowed_filters
-                if key in filter_list
-            }
-
-            users = User.objects.filter(**filters)
-
-        paginator = DynamicPageSizePagination()
-        paginator.page_size = page_size
-
-        paginated_users = paginator.paginate_queryset(users, request)
-
-        serializer = UserSerializer(paginated_users, many=True)
-
-        return paginator.get_paginated_response(serializer.data)
+            user = User.objects.filter(role=role)
+        
+        
+        return paginate_queryset(
+            request,
+            user,
+            UserSerializer
+        )
+    
     
 class UpdateEmployerDetails(APIView):
     authentication_classes = [JWTAuthentication]

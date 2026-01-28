@@ -14,16 +14,16 @@ class JobPostCreateView(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request):
         
-        serializer = JobPostSerializer(data=request.data)
+        serializer = JobPostSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
-        
-        jobpost = create_jobpost(**serializer.validated_data)
+        jobpost = serializer.save()
+
         return Response(
             {
                 "id": jobpost.id,
                 "message": "Job post created successfully"
-            }
-            , status=status.HTTP_201_CREATED
+            },
+            status=status.HTTP_201_CREATED
         )
         
 class DynamicPageSizePagination(PageNumberPagination):

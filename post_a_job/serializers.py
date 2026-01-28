@@ -5,7 +5,7 @@ from userauth.serializers import UserSerializer
 
 class JobPostSerializer(serializers.ModelSerializer):
     employer = serializers.SerializerMethodField()
-    
+    user_id = serializers.IntegerField(read_only=True)
     class Meta:
         model = JobPost
         fields = [
@@ -27,7 +27,7 @@ class JobPostSerializer(serializers.ModelSerializer):
         
     def get_employer(self, obj):
         user_id = obj.user_id
-        user = User.objects.filter(id=user_id).values("avatar")
+        user = User.objects.filter(id=user_id).values("avatar","userDetails_emp")
         
         return user
         
@@ -35,3 +35,8 @@ class JobPostSerializer(serializers.ModelSerializer):
         if value < 0:
             raise serializers.ValidationError("Salary must be a positive integer.")
         return value
+    
+    def create(self, validated_data):
+        user = self.context['request'].user
+        validated_data['user_id'] = user.id
+        return JobPost.objects.create(**validated_data)

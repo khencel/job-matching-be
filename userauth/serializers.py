@@ -37,6 +37,7 @@ class UserSerializer(serializers.ModelSerializer):
         user_id = obj.id
         # Renamed variable to 'resume_obj' to avoid confusion with the field 'resume'
         resume = MyResume.objects.filter(user_id=user_id, deleted=False).first()
+<<<<<<< Updated upstream
         
         if resume and resume.resume:
             # 1. Get the Request context (needed to build full http:// URL)
@@ -55,6 +56,10 @@ class UserSerializer(serializers.ModelSerializer):
                 # Handles cases where the file field exists but no file is actually associated
                 return None
                 
+=======
+        if resume:
+            return resume.resume.name
+>>>>>>> Stashed changes
         return None
         
     def get_perks_benefits(self, obj):

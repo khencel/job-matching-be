@@ -24,6 +24,9 @@ class JobApplyView(APIView):
     
     def get(self, request):
         page_size = request.query_params.get('page_size', 10)
+        gender = request.query_params.get('gender', None)
+        company = request.query_params.get('company', None)
+        
         
         try:
             page_size = int(page_size)
@@ -36,8 +39,19 @@ class JobApplyView(APIView):
             page_size = 10
             
         try:
-            job_apply = JobApply.objects.all()
             
+            job_apply = JobApply.objects.select_related(
+                'user',
+                'employer',
+                'job_post'
+            )
+            
+            if gender:
+                job_apply = job_apply.filter(user__userDetails_job_seeker__jobSeekerData__gender=gender)
+                
+            if company:
+                job_apply = job_apply.filter(employer__userDetails_emp__company_information__name__icontains=company)
+                
             
             paginator = DynamicPageSizePagination()
             paginator.page_size = page_size  
@@ -99,12 +113,9 @@ class ApplyJobSeekerApplicant(APIView):
 
     def get(self, request):
         employer = request.user
-        is_redirect = employer.userDetails_emp['redirect_job_seeker']
-        if is_redirect:
-            job_apply = JobApply.objects.filter(employer=employer)
-        else:
-            job_apply = JobApply.objects.filter(employer=employer, status='approved')
-
+        
+        job_apply = JobApply.objects.filter(employer=employer)
+       
         return paginate_queryset(
             request,
             job_apply,
