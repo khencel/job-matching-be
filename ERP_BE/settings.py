@@ -215,4 +215,4 @@ DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-
+X_FRAME_OPTIONS = 'ALLOWALL'
