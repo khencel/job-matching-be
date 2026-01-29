@@ -7,6 +7,8 @@ import json
 from perksbenefits.models import PerksBenefits
 from perksbenefits.serializers import PerksBenefitsSerializer
 from my_resume.models import MyResume
+from job_seeker_documents.models import ApplicantDocument
+from job_seeker_documents.serializers import MyResumeSerializer
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -14,14 +16,14 @@ class UserSerializer(serializers.ModelSerializer):
     banner = serializers.ImageField(required=False, allow_null=True)
     perks_benefits = serializers.SerializerMethodField()
     resume = serializers.SerializerMethodField()
-    
+    documents = serializers.SerializerMethodField()
     
     class Meta:
         model = User
         fields = [
             'id', 'email','password','deleted_at','first_name','last_name',
             'userDetails_emp','userDetails_job_seeker','userDetails_supervisory',
-            'avatar','banner','role','is_email_verified','perks_benefits','is_active','created_at','resume'
+            'avatar','banner','role','is_email_verified','perks_benefits','is_active','created_at','resume','documents'
         ]
         extra_kwargs = {
             'password': {'write_only': True, 'required': False},
@@ -32,6 +34,12 @@ class UserSerializer(serializers.ModelSerializer):
             "user_id",
             "perks_benefits"
         ]
+        
+    def get_documents(self, obj):
+        user_id = obj.id
+        documents = ApplicantDocument.objects.filter(user_id=user_id, deleted=False).values('documents')
+        return documents
+        
         
     def get_resume(self, obj):
         user_id = obj.id
