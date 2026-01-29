@@ -48,7 +48,6 @@ class JobApplySerializer(serializers.ModelSerializer):
         } 
 
     def get_job_post(self, obj):
-        
         job_post = obj.job_post
         serializer = JobPostSerializers.JobPostSerializer(job_post)
         employer_id = serializer.data.get('user_id')

@@ -54,7 +54,8 @@ INSTALLED_APPS = [
     'post_a_job',
     'perksbenefits',
     'job_apply',
-    'my_resume'
+    'my_resume',
+    'documents'
     
 ]
 

@@ -226,6 +226,14 @@ class UpdateEmployerDetails(APIView):
         return Response(serializer.data)
 
 
+class ShowAllCompany(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        company = User.objects.filter(role="employer").values("userDetails_emp")
+        return Response(company)
+
 
 
 

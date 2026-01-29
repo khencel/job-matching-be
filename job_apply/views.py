@@ -26,7 +26,9 @@ class JobApplyView(APIView):
         page_size = request.query_params.get('page_size', 10)
         gender = request.query_params.get('gender', None)
         company = request.query_params.get('company', None)
-        
+        visa = request.query_params.get('visa', None)
+        firstName = request.query_params.get('firstName', None)
+        lastName = request.query_params.get('lastName', None)
         
         try:
             page_size = int(page_size)
@@ -51,6 +53,15 @@ class JobApplyView(APIView):
                 
             if company:
                 job_apply = job_apply.filter(employer__userDetails_emp__company_information__name__icontains=company)
+            
+            if visa:
+                job_apply = job_apply.filter(user__userDetails_job_seeker__jobSeekerData__visaStatus=visa)
+            
+            if firstName:
+                job_apply = job_apply.filter(user__userDetails_job_seeker__jobSeekerData__firstName__icontains=firstName)
+                
+            if lastName:
+                job_apply = job_apply.filter(user__userDetails_job_seeker__jobSeekerData__lastName__icontains=lastName)
                 
             
             paginator = DynamicPageSizePagination()
@@ -121,6 +132,8 @@ class ApplyJobSeekerApplicant(APIView):
             job_apply,
             JobApplySerializer
         )
+        
+    
         
         
     
