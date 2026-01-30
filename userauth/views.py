@@ -126,26 +126,6 @@ class CheckEmailIfExist(APIView):
         else:
             return Response({"exists": False})
     
-
-
-from utils.translator import translate_text
-
-
-class TestTranslate(APIView):
-    permission_classes = [AllowAny]
-    def post(self, request):
-        
-        
-        text = request.data["q"]
-        source = request.data["source"]
-        target = request.data["target"]
-        
-
-        result = translate_text(text, source, target)
-
-        return Response({
-            "translatedText": result
-        })
         
 from rest_framework.parsers import MultiPartParser, FormParser
 
@@ -233,6 +213,14 @@ class ShowAllCompany(APIView):
     def get(self, request):
         company = User.objects.filter(role="employer").values("userDetails_emp")
         return Response(company)
+    
+
+class TestApi(APIView):
+    
+    def get(self, request):
+        return Response("Test")
+    
+    
 
 
 

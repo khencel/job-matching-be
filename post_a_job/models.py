@@ -13,7 +13,7 @@ class BaseModel(models.Model):
         self.save()
         
 class JobPost(BaseModel):  
-    user_id         = models.IntegerField()
+    user_id         = models.IntegerField(null=True)
     title           = models.CharField(max_length=255)
     salary          = models.PositiveIntegerField()
     type_of_emp     = models.JSONField()

@@ -33,7 +33,12 @@ SECRET_KEY = 'django-insecure-cs7g$s1i7ivb$@i6mvx3*@*h&dsod*!xc&^t%jp_+o)k3e#90g
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "yourdomain.com",
+    "www.yourdomain.com",
+    "127.0.0.1",
+    "localhost"
+]
 
 
 # Application definition
@@ -50,7 +55,6 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'userauth',
-    'Products',
     'post_a_job',
     'perksbenefits',
     'job_apply',
@@ -99,12 +103,15 @@ WSGI_APPLICATION = 'ERP_BE.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': env('SQL_DATABASE'),
         'USER': env('SQL_USER'),
         'PASSWORD': env('SQL_PASSWORD'),
         'HOST': env('SQL_HOST'),
         "PORT": env('DATABASE_PORT'),
+        'OPTIONS': {
+            'init_command': "SET sql_mode=''",
+        },
     }
 }
 
@@ -144,6 +151,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

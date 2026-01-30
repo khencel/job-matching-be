@@ -26,10 +26,10 @@ urlpatterns = [
     
     path("user/update/<int:pk>/", views.UpdateUser.as_view(), name="update_user"),
     
-    path('test-translate', views.TestTranslate.as_view(), name='test_translate'),
     path('update/user', views.UpdateUserNotEmployee.as_view(), name='update_user'),
     path('users', views.GetAllUserByFilter.as_view(), name="users"),
     path('update/employer/details/<int:pk>/', views.UpdateEmployerDetails.as_view(), name='update_employer'),
-    path('company', views.ShowAllCompany.as_view(), name="company_list")
+    path('company', views.ShowAllCompany.as_view(), name="company_list"),
+    path('test', views.TestApi.as_view(), name="test"),
 ]
 

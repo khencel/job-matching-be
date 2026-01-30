@@ -1,6 +1,8 @@
 # Media files (Django)
 media/
 
+ERP_BE/.env/
+
 # Python bytecode
 __pycache__/
 *.pyc
@@ -10,6 +12,7 @@ __pycache__/
 env/
 venv/
 ENV/
+
 
 # macOS specific junk
 .DS_Store.venv/
