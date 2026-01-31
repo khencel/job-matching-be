@@ -1,7 +1,9 @@
 # Media files (Django)
-media/
+/media/
+ERP_BE/.env
+/utils/
 
-ERP_BE/.env/
+
 
 # Python bytecode
 __pycache__/
@@ -20,5 +22,7 @@ __pycache__/
 *.pyc
 .DS_Store
 
+
+/requirements.py/
 
 
