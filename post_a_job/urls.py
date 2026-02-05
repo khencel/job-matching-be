@@ -8,4 +8,5 @@ urlpatterns = [
     path('list', views.JobPostListAllView.as_view(), name='list_all_jobpost'),
     path('details/<int:pk>', views.JobPostDetailsView.as_view(), name='jobpost_details'),
     path('update/<int:pk>', views.JobPostUpdate.as_view(), name='update_jobpost'),
+    path('change-post-status/<int:pk>', views.JobPostChangeStatus.as_view())
 ]

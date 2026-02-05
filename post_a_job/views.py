@@ -7,6 +7,7 @@ from .models import JobPost
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
+from django.shortcuts import get_object_or_404
 
 
 class JobPostCreateView(APIView):
@@ -85,7 +86,7 @@ class JobPostListAllView(APIView):
     # permission_classes = [IsAuthenticated]
     
     def get(self, request):
-        jobposts = JobPost.objects.all()
+        jobposts = JobPost.objects.filter(is_active=True)
         serializer = JobPostSerializer(jobposts, many=True)
         return Response(serializer.data)
     
@@ -116,3 +117,17 @@ class JobPostUpdate(APIView):
         serializer.save()
         
         return Response(serializer.data)
+    
+class JobPostChangeStatus(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, pk):
+        job_post = get_object_or_404(JobPost, id=pk)
+        job_post.is_active = not job_post.is_active
+        job_post.save()
+        return Response({
+            "value":True,
+            "message":"status has been change"
+        })
+        

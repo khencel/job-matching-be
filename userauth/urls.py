@@ -31,5 +31,8 @@ urlpatterns = [
     path('update/employer/details/<int:pk>/', views.UpdateEmployerDetails.as_view(), name='update_employer'),
     path('company', views.ShowAllCompany.as_view(), name="company_list"),
     path('test-khen', views.TestApi.as_view(), name="test"),
+    path('change-status/<int:pk>/', views.ChangeStatusUser.as_view(), name='change_status'),
+    path('check-user-password', views.CheckUserPassword.as_view(), name='check_user_password')
+    
 ]
 

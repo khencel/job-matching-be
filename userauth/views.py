@@ -213,15 +213,68 @@ class ShowAllCompany(APIView):
     def get(self, request):
         company = User.objects.filter(role="employer").values("userDetails_emp")
         return Response(company)
-    
+
+
+from django.core.mail import send_mail
+from django.conf import settings
 
 class TestApi(APIView):
     
     def get(self, request):
-        return Response("Test")
+        try:
+            send_mail(
+                subject='Test Email',
+                message='Hello! Gumagana na ang email sending 🎉',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=['khenneth.alaiza@gmail.com'],
+                fail_silently=False,
+            )
+            return Response({"status": "success", "message": "Email sent successfully"})
+        except Exception as e:
+            return Response({"status": "error", "error": str(e)})
     
+class ChangeStatusUser(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    def get(self, request, pk):
+        user = generics.get_object_or_404(User, pk=pk)
+        user.is_active = not user.is_active
+        user.save()
+        return Response("success")
     
 
+class CheckUserPassword(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        current_password = request.data.get("current_password")
+        new_password = request.data.get("new_password")
+
+        if not current_password or not new_password:
+            return Response(
+                {"message": "current_password and new_password are required"}
+            )
+
+        user = request.user  
+
+      
+        if not user.check_password(current_password):
+            return Response(
+                {"value":False,"message": "Password is incorrect"}
+            )
+
+
+        user.set_password(new_password)
+        user.save()
+
+        return Response(
+            {
+                "value":True,
+                "message": "Password successfully changed"
+            },
+            status=status.HTTP_200_OK
+        )
+            
 
 
 
