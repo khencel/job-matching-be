@@ -28,7 +28,7 @@ class JobPostSerializer(serializers.ModelSerializer):
         
     def get_employer(self, obj):
         user_id = obj.user_id
-        user = User.objects.filter(id=user_id).values("avatar","userDetails_emp")
+        user = User.objects.filter(id=user_id).values("avatar","banner","userDetails_emp")
         
         return user
         

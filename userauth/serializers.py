@@ -9,6 +9,7 @@ from perksbenefits.serializers import PerksBenefitsSerializer
 from my_resume.models import MyResume
 from job_seeker_documents.models import ApplicantDocument
 from job_seeker_documents.serializers import MyResumeSerializer
+from datetime import date
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -67,7 +68,25 @@ class UserSerializer(serializers.ModelSerializer):
             validated_data['userDetails_emp'] = json.loads(details)
         
         if user_type == 'job_seeker':
-            validated_data['userDetails_job_seeker'] = json.loads(details)
+            
+            raw_details = self.initial_data['details']
+            details = json.loads(raw_details)
+            job_seeker_data = details.get('jobSeekerData', {})
+            birthdate_str = job_seeker_data.get('birthdate')
+
+            if birthdate_str:
+                birthdate = date.fromisoformat(birthdate_str)
+                today = date.today()
+
+                age = today.year - birthdate.year
+                if (today.month, today.day) < (birthdate.month, birthdate.day):
+                    age -= 1
+
+                # 👇 inject age into JSON
+                job_seeker_data['age'] = age
+                details['jobSeekerData'] = job_seeker_data
+
+            validated_data['userDetails_job_seeker'] = details
         
         if user_type == 'supervisory':
             validated_data['userDetails_supervisory'] = json.loads(details)

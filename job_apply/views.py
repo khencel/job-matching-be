@@ -8,6 +8,9 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError
 from utils.helper import paginate_queryset
+from django.db.models import F, ExpressionWrapper, IntegerField
+from django.db.models.functions import ExtractYear
+from datetime import date
 
 
 
@@ -29,6 +32,7 @@ class JobApplyView(APIView):
         visa = request.query_params.get('visa', None)
         firstName = request.query_params.get('firstName', None)
         lastName = request.query_params.get('lastName', None)
+        startAge = request.query_params.get('startAge', None)
         
         try:
             page_size = int(page_size)
@@ -62,6 +66,13 @@ class JobApplyView(APIView):
                 
             if lastName:
                 job_apply = job_apply.filter(user__userDetails_job_seeker__jobSeekerData__lastName__icontains=lastName)
+            
+            if startAge:
+                job_apply = job_apply.filter(
+                    user__userDetails_job_seeker__jobSeekerData__age__gte=int(startAge)
+                )
+                
+            
                 
             
             paginator = DynamicPageSizePagination()
@@ -132,6 +143,7 @@ class ApplyJobSeekerApplicant(APIView):
             job_apply,
             JobApplySerializer
         )
+        
         
     
         

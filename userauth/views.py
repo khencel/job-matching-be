@@ -82,7 +82,7 @@ class ListCreate(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         user = serializer.save()
         verification = EmailVerification.objects.create(user=user)
-        send_verification_email(user, verification.token)
+        # send_verification_email(user, verification.token)
     
 class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [JWTAuthentication]
