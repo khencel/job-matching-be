@@ -23,7 +23,8 @@ class JobPostSerializer(serializers.ModelSerializer):
             "benefits",
             "created_at",
             "employer",
-            "is_active"
+            "is_active",
+            "region"
         ]
         
     def get_employer(self, obj):

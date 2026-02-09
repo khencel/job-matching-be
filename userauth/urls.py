@@ -32,7 +32,8 @@ urlpatterns = [
     path('company', views.ShowAllCompany.as_view(), name="company_list"),
     path('test-khen', views.TestApi.as_view(), name="test"),
     path('change-status/<int:pk>/', views.ChangeStatusUser.as_view(), name='change_status'),
-    path('check-user-password', views.CheckUserPassword.as_view(), name='check_user_password')
+    path('check-user-password', views.CheckUserPassword.as_view(), name='check_user_password'),
+    path('contact-us', views.ContactUsEmail.as_view(), name='contact_us'),
     
 ]
 

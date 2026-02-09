@@ -274,6 +274,32 @@ class CheckUserPassword(APIView):
             },
             status=status.HTTP_200_OK
         )
+
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
+from django.conf import settings
+        
+class ContactUsEmail(APIView):
+    def post(self, request):
+        data = request.data
+        try:
+            # Render HTML template with payload
+            email_html = render_to_string('contact_us/contact_email.html', data)
+
+            # Prepare EmailMessage
+            email = EmailMessage(
+                subject=f"Contact Us: {data.get('subject')}",
+                body=email_html,
+                from_email=data['email'],
+                to=[settings.DEFAULT_FROM_EMAIL] 
+            )
+            email.content_subtype = "html" 
+            email.send()  # send email
+
+            return Response({"message": "Email sent successfully!"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
             
 
 

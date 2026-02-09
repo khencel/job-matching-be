@@ -80,13 +80,39 @@ class DeleteJobPostView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except JobPost.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+        
+import json
 
 class JobPostListAllView(APIView):
     # authentication_classes = [JWTAuthentication]
     # permission_classes = [IsAuthenticated]
     
-    def get(self, request):
+    def post(self, request):
+        category = request.data.get('category')
+        type_of_emp = request.data.get('type_of_emp', [])
+        salary_start = request.data.get('salary_start')
+        salary_end = request.data.get('salary_end')
+        region = request.data.get('region')
+        
         jobposts = JobPost.objects.filter(is_active=True)
+        
+        if category:
+            jobposts = jobposts.filter(category__contains=[{"value": category}])
+        
+        if type_of_emp:
+            jobposts = jobposts.filter(type_of_emp__contains=json.loads(type_of_emp))
+            
+        if salary_start and salary_end:
+            jobposts = jobposts.filter(salary__gte=salary_start, salary__lte=salary_end)
+        elif salary_start:
+            jobposts = jobposts.filter(salary__gte=salary_start)
+        elif salary_end:
+            jobposts = jobposts.filter(salary__lte=salary_end)
+        
+        if region:
+            jobposts = jobposts.filter(region=region)
+        
+        
         serializer = JobPostSerializer(jobposts, many=True)
         return Response(serializer.data)
     

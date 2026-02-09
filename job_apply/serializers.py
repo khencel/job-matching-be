@@ -39,12 +39,15 @@ class JobApplySerializer(serializers.ModelSerializer):
             
         except (TypeError, KeyError):
             job_seeker_data = serializer.data.get('userDetails_job_seeker')
+        
 
+        
         return {
             "userDetails": job_seeker_data,
             "email": serializer.data.get('email'), 
             "avatar": serializer.data.get('avatar'),
-            "resume": resume_serializer.data if myresume else None
+            "resume": resume_serializer.data if myresume else None,
+            "documents": serializer.data['documents'] if serializer.data['documents'] else None
         } 
 
     def get_job_post(self, obj):

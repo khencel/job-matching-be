@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from .models import ApplicantDocument
-from .serializers import MyResumeSerializer
+from .serializers import JobSeekerDocumentSerializer
 
 class CreateDocuments(APIView):
     authentication_classes = [JWTAuthentication]
@@ -21,5 +21,5 @@ class CreateDocuments(APIView):
             doc = ApplicantDocument.objects.create(user=user, documents=file)
             saved_documents.append(doc)
         
-        serializer = MyResumeSerializer(saved_documents, many=True)
+        serializer = JobSeekerDocumentSerializer(saved_documents, many=True)
         return Response(serializer.data)

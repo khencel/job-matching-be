@@ -8,7 +8,6 @@ from perksbenefits.models import PerksBenefits
 from perksbenefits.serializers import PerksBenefitsSerializer
 from my_resume.models import MyResume
 from job_seeker_documents.models import ApplicantDocument
-from job_seeker_documents.serializers import MyResumeSerializer
 from datetime import date
 
 

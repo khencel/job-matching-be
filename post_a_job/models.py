@@ -24,6 +24,7 @@ class JobPost(BaseModel):
     who_you_are     = models.TextField()
     nice_to_have    = models.TextField()
     benefits        = models.JSONField(default=list, blank=True)
+    region          = models.CharField(max_length=255, null=True, blank=True)  
     is_active       = models.BooleanField(default=False)
     created_at      = models.DateTimeField(auto_now_add=True)
     updated_at      = models.DateTimeField(auto_now=True)
