@@ -13,7 +13,6 @@ urlpatterns = [
     path('api/resume/', include('my_resume.urls')),
     path('api/documents/', include('job_seeker_documents.urls')),
     path('api/jobApproach/', include('jobApproach.urls')),
-    
 ]
 
 if settings.DEBUG:
