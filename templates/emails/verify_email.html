@@ -34,19 +34,19 @@
 </head>
 <body>
   <div class="container">
-    <h2>Hello {{ user.first_name|default:"User" }},</h2>
+    <!-- <h2>Hello {{ user.first_name|default:"User" }},</h2> -->
+    <h2>{{context.header}},</h2>
 
     <p>
-      Thank you for signing up. Please verify your email address by clicking the
-      button below.
+      {{context.description}}
     </p>
 
-    <a href="{{ verify_url }}" class="btn">Verify Email</a>
+    <a href="{{ verify_url }}" class="btn">{{context.button}}</a>
 
-    <p>If you did not create this account, you can safely ignore this email.</p>
+    <p>{{context.subtext}}</p>
 
     <div class="footer">
-      © {{ year }} Your App Name
+      © {{ year }} Job Sapo
     </div>
   </div>
 </body>

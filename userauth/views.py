@@ -16,6 +16,12 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 import json
 from rest_framework.pagination import PageNumberPagination
 from utils.helper import paginate_queryset
+from .serializers import ForgotPasswordSerializer, ResetPasswordSerializer
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.conf import settings
+from django.core.mail import send_mail
 
 
 class EmailTokenObtainPairView(TokenObtainPairView):
@@ -81,8 +87,10 @@ class ListCreate(generics.ListCreateAPIView):
     
     def perform_create(self, serializer):
         user = serializer.save()
+        context_text = json.loads(self.request.data.get('context'))
+        
         verification = EmailVerification.objects.create(user=user)
-        # send_verification_email(user, verification.token)
+        send_verification_email(user, verification.token, context_text)
     
 class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     authentication_classes = [JWTAuthentication]
@@ -99,7 +107,8 @@ class AddSuperAdmin(APIView):
             data.save()
             return Response(data.data, status=status.HTTP_201_CREATED)
         return Response(data.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+from django.shortcuts import redirect
 class VerifyEmail(APIView):
     def get(self, request, token):
         try:
@@ -110,8 +119,8 @@ class VerifyEmail(APIView):
             user.save()
 
             verification.delete()
-
-            return Response({"message": "Email verified successfully"})
+            return redirect(settings.FRONTEND_URL+"login")
+            # return Response({"message": "Email verified successfully"})
         except EmailVerification.DoesNotExist:
             return Response(
                 {"error": "Invalid or expired token"},
@@ -299,9 +308,105 @@ class ContactUsEmail(APIView):
             return Response({"message": "Email sent successfully!"}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
-            
 
+
+   
+from django.utils import timezone
+from django.utils.html import strip_tags
+from django.core.mail import EmailMultiAlternatives
+
+token_generator = PasswordResetTokenGenerator()   
+        
+class ForgotPassword(APIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def post(self, request):
+        serializer = ForgotPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data["email"].strip()
+
+        generic_ok = {
+            "message": "If that email exists, we sent a password reset link."
+        }
+
+        user = User.objects.filter(
+            email__iexact=email,
+            is_active=True
+        ).first()
+
+        # 🔒 Do not reveal if user exists
+        if not user:
+            return Response(generic_ok, status=status.HTTP_200_OK)
+
+        # Generate token
+        uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+        token = token_generator.make_token(user)
+
+        # Frontend reset URL
+        frontend_url = getattr(settings, "FRONTEND_RESET_PASSWORD_URL", None)
+        if not frontend_url:
+            frontend_url = getattr(settings, "FRONTEND_URL", "").rstrip("/") + "/forgot-password"
+
+        reset_link = f"{frontend_url}?uid={uidb64}&token={token}"
+
+        subject = "Reset Your Password"
+        from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "no-reply@example.com")
+
+        # Render HTML template
+        html_content = render_to_string(
+            "emails/reset_password.html",
+            {
+                "reset_link": reset_link,
+                "user_email": user.email,
+                "year": timezone.now().year,
+            },
+        )
+
+        text_content = strip_tags(html_content)
+
+        # Send email (HTML + text)
+        email_message = EmailMultiAlternatives(
+            subject,
+            text_content,
+            from_email,
+            [user.email],
+        )
+
+        email_message.attach_alternative(html_content, "text/html")
+        email_message.send()
+
+        return Response(generic_ok, status=status.HTTP_200_OK)
+        
+        
+class ResetPassword(APIView):
+    authentication_classes = []
+    permission_classes = []
+
+    def post(self, request):
+        serializer = ResetPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        uidb64 = serializer.validated_data["uidb64"]
+        token = serializer.validated_data["token"]
+        new_password = serializer.validated_data["new_password"]
+
+        # decode uid
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid, is_active=True)
+        except Exception:
+            return Response({"message": "Invalid reset link."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # check token
+        if not token_generator.check_token(user, token):
+            return Response({"message": "Reset link expired or invalid."}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.set_password(new_password)
+        user.save(update_fields=["password"])
+
+        return Response({"message": "Password has been reset successfully."}, status=status.HTTP_200_OK)
 
 
 

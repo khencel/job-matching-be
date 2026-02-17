@@ -228,3 +228,6 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 X_FRAME_OPTIONS = 'ALLOWALL'
+
+FRONTEND_URL = env('FRONTEND_URL')
+BACKEND_URL = env('BACKEND_URL')
