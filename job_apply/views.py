@@ -144,8 +144,6 @@ class ApplyJobSeekerApplicant(APIView):
             JobApplySerializer
         )
         
-    
-        
         
     
         

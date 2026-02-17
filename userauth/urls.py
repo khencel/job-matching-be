@@ -34,5 +34,8 @@ urlpatterns = [
     path('change-status/<int:pk>/', views.ChangeStatusUser.as_view(), name='change_status'),
     path('check-user-password', views.CheckUserPassword.as_view(), name='check_user_password'),
     path('contact-us', views.ContactUsEmail.as_view(), name='contact_us'),
+    
+    path("forgot-password/", views.ForgotPassword.as_view(), name="forgot-password"),
+    path("reset-password/", views.ResetPassword.as_view(), name="reset-password"),
 ]
 
