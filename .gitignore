@@ -1,0 +1,28 @@
+# Media files (Django)
+/media/
+*.env
+/utils/
+
+
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Virtual Environments
+.venv/
+env/
+venv/
+ENV/
+
+
+# macOS specific junk
+.DS_Store.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+
+/requirements.py/
+
+

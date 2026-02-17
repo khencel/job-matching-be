@@ -6,12 +6,13 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
+
 urlpatterns = [
     # path('login', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('login', views.EmailTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh', TokenRefreshView.as_view(), name='token_refresh'),
     path('token/verify', TokenVerifyView.as_view(), name='token_verify'),
-    path('test', views.ProtectedView.as_view(), name='test_view'),
+    # path('test', views.ProtectedView.as_view(), name='test_view'),
     path('logout', views.LogoutView.as_view(), name='logout'),
     path('get-data', views.GetData.as_view(), name='getData'),
     
@@ -20,6 +21,21 @@ urlpatterns = [
     path('user/<int:pk>', views.UserRetrieveUpdateDestroyView.as_view(), name='update'),
     
     path('add-super-admin', views.AddSuperAdmin.as_view(), name='add_super_admin'),
+    path("verify-email/<uuid:token>/", views.VerifyEmail.as_view()),
+    path("check-email/<str:email>/", views.CheckEmailIfExist.as_view()),
     
-    path('test-translate', views.TestTranslate.as_view(), name='test_translate'),
+    path("user/update/<int:pk>/", views.UpdateUser.as_view(), name="update_user"),
+    
+    path('update/user', views.UpdateUserNotEmployee.as_view(), name='update_user'),
+    path('users', views.GetAllUserByFilter.as_view(), name="users"),
+    path('update/employer/details/<int:pk>/', views.UpdateEmployerDetails.as_view(), name='update_employer'),
+    path('company', views.ShowAllCompany.as_view(), name="company_list"),
+    path('test-khen', views.TestApi.as_view(), name="test"),
+    path('change-status/<int:pk>/', views.ChangeStatusUser.as_view(), name='change_status'),
+    path('check-user-password', views.CheckUserPassword.as_view(), name='check_user_password'),
+    path('contact-us', views.ContactUsEmail.as_view(), name='contact_us'),
+    
+    path("forgot-password/", views.ForgotPassword.as_view(), name="forgot-password"),
+    path("reset-password/", views.ResetPassword.as_view(), name="reset-password"),
 ]
+

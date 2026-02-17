@@ -14,6 +14,7 @@ from pathlib import Path
 
 import environ
 from datetime import timedelta
+import os
 
 
 env = environ.Env()
@@ -32,7 +33,12 @@ SECRET_KEY = 'django-insecure-cs7g$s1i7ivb$@i6mvx3*@*h&dsod*!xc&^t%jp_+o)k3e#90g
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "yourdomain.com",
+    "www.yourdomain.com",
+    "127.0.0.1",
+    "localhost"
+]
 
 
 # Application definition
@@ -49,7 +55,12 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'userauth',
-    'Products'
+    'post_a_job',
+    'perksbenefits',
+    'job_apply',
+    'my_resume',
+    'job_seeker_documents',
+    'jobApproach'
     
 ]
 
@@ -79,7 +90,10 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
             ],
         },
+        "DIRS": [BASE_DIR / "templates"],
+        
     },
+    
 ]
 
 WSGI_APPLICATION = 'ERP_BE.wsgi.application'
@@ -90,12 +104,15 @@ WSGI_APPLICATION = 'ERP_BE.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': env('SQL_DATABASE'),
         'USER': env('SQL_USER'),
         'PASSWORD': env('SQL_PASSWORD'),
         'HOST': env('SQL_HOST'),
         "PORT": env('DATABASE_PORT'),
+        'OPTIONS': {
+            'init_command': "SET sql_mode=''",
+        },
     }
 }
 
@@ -135,6 +152,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -188,3 +206,28 @@ CORS_ALLOW_CREDENTIALS = True
 
 AUTH_USER_MODEL = 'userauth.User'
 
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
+}
+
+# Email 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = env('EMAIL_HOST')
+EMAIL_PORT = env('EMAIL_PORT')
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
+
+
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+X_FRAME_OPTIONS = 'ALLOWALL'
+
+FRONTEND_URL = env('FRONTEND_URL')
+BACKEND_URL = env('BACKEND_URL')
