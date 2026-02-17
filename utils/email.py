@@ -4,8 +4,8 @@ from django.conf import settings
 from django.utils.html import strip_tags
 from django.utils.timezone import now
 
-def send_verification_email(user, token):
-    verify_url = f"http://127.0.0.1:8000/api/auth/verify-email/{token}"
+def send_verification_email(user, token, val_context):
+    verify_url = f"{settings.BACKEND_URL}api/auth/verify-email/{token}"
 
     subject = "Verify your email"
     from_email = settings.DEFAULT_FROM_EMAIL
@@ -17,6 +17,7 @@ def send_verification_email(user, token):
             "user": user,
             "verify_url": verify_url,
             "year": now().year,
+            "context": val_context
         }
     )
 

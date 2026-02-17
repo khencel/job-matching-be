@@ -197,3 +197,12 @@ class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
             "role": self.user.role
         }
         return data
+    
+    
+class ForgotPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+class ResetPasswordSerializer(serializers.Serializer):
+    uidb64 = serializers.CharField()
+    token = serializers.CharField()
+    new_password = serializers.CharField(min_length=8, write_only=True)
